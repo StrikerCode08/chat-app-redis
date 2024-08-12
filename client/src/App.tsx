@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 interface Message {
   id: number;
@@ -7,7 +8,7 @@ interface Message {
   createdAt: string;
 }
 
-const ChatApp: React.FC = () => {
+const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -82,25 +83,12 @@ const ChatApp: React.FC = () => {
   };
 
   return (
-    <div>
-      {/* Registration and login forms */}
-      <button onClick={() => register('exampleUser', 'examplePassword')}>Register</button>
-      <button onClick={() => login('exampleUser', 'examplePassword')}>Login</button>
-
-      {/* Fetch cached messages */}
-      <button onClick={fetchMessages}>Fetch Cached Messages</button>
-
-      {/* Display messages */}
-      <ul>
-        {messages.map((msg) => (
-          <li key={msg.id}>{msg.content}</li>
-        ))}
-      </ul>
-
-      {/* Send a message */}
-      <button onClick={() => sendMessage('Hello, World!')}>Send Message</button>
-    </div>
+    <Router>
+      <Routes>
+        <Route path='/login'  />
+      </Routes>
+    </Router>
   );
 };
 
-export default ChatApp;
+export default App;
