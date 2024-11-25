@@ -14,8 +14,14 @@ const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient();
-
+const cors = require("cors");
 app.use(express.json());
+app.use(
+  cors({
+    origin: [process.env.TEST_URL, process.env.PROD_URL],
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+);
 app.use("/auth", authRoutes);
 
 wss.on("connection", (ws, req) => {
