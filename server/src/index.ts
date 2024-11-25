@@ -5,11 +5,10 @@ import authRoutes from "./routes/authRoutes";
 import { authenticate } from "./middlewares/authMiddleware";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
-import dotenv from 'dotenv'; 
+import dotenv from "dotenv";
 import redis from "./utils/redis";
 
 dotenv.config();
-
 
 const app = express();
 const server = createServer(app);
@@ -17,7 +16,7 @@ const wss = new WebSocketServer({ server });
 const prisma = new PrismaClient();
 
 app.use(express.json());
-app.use("/auth",authRoutes);
+app.use("/auth", authRoutes);
 
 wss.on("connection", (ws, req) => {
   ws.on("message", async (message: string) => {
@@ -25,7 +24,9 @@ wss.on("connection", (ws, req) => {
     const { token, content } = parsedMessage;
 
     try {
-      const payload = jwt.verify(token, `${process.env.JWT_SECRET}`) as { userId: number };
+      const payload = jwt.verify(token, `${process.env.JWT_SECRET}`) as {
+        userId: number;
+      };
       const newMessage = await prisma.message.create({
         data: {
           content,
@@ -45,15 +46,15 @@ wss.on("connection", (ws, req) => {
   });
 });
 app.get("/messages", authenticate, async (req, res) => {
-    try {
-      const messages = await redis.lrange("messages", 0, -1);
-      const parsedMessages = messages.map((msg) => JSON.parse(msg));
-      res.json(parsedMessages);
-    } catch (error) {
-      res.status(500).json({ error });
-    }
-  });
-  
+  try {
+    const messages = await redis.lrange("messages", 0, -1);
+    const parsedMessages = messages.map((msg) => JSON.parse(msg));
+    res.json(parsedMessages);
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 server.listen(process.env.PORT, () => {
-  console.log("Server is running on port 3000");
+  console.log(`Server is running on port ${process.env.PORT}`);
 });
