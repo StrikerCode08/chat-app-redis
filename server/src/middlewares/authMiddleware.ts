@@ -1,14 +1,22 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(" ")[1];
+export const authenticate = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log(req);
+
+  const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
-    const payload = jwt.verify(token, `${process.env.JWT_SECRET}`) as { userId: number };
+    const payload = jwt.verify(token, `${process.env.JWT_SECRET}`) as {
+      userId: number;
+    };
     req.userId = payload.userId;
     next();
   } catch (error) {

@@ -12,7 +12,10 @@ export const register = async (username: string, password: string) => {
       password: hashedPassword,
     },
   });
-  return user;
+  const token = jwt.sign({ userId: user.id }, `${process.env.JWT_SECRET}`, {
+    expiresIn: "1h",
+  });
+  return { user, token };
 };
 
 export const login = async (username: string, password: string) => {
@@ -28,6 +31,8 @@ export const login = async (username: string, password: string) => {
     throw new Error("Invalid password");
   }
 
-  const token = jwt.sign({ userId: user.id }, `${process.env.JWT_SECRET}`, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id }, `${process.env.JWT_SECRET}`, {
+    expiresIn: "1h",
+  });
   return token;
 };

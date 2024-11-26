@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [process.env.TEST_URL, process.env.PROD_URL],
-    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200,
   })
 );
 app.use("/auth", authRoutes);
@@ -40,7 +40,6 @@ wss.on("connection", (ws, req) => {
         },
       });
       await redis.lpush("messages", JSON.stringify(newMessage));
-      // Broadcast message to all connected clients
       wss.clients.forEach((client) => {
         if (client !== ws && client.readyState === client.OPEN) {
           client.send(JSON.stringify(newMessage));
