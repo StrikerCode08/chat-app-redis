@@ -25,6 +25,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/node": "^22.2.0",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
