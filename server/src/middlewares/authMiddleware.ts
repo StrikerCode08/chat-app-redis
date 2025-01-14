@@ -6,9 +6,8 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req);
+  const token = req.headers.authorization?.split(" ")[1];
 
-  const token = req.cookies.token;
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
@@ -17,7 +16,7 @@ export const authenticate = (
     const payload = jwt.verify(token, `${process.env.JWT_SECRET}`) as {
       userId: number;
     };
-    req.userId = payload.userId;
+    (req as any).userId = payload.userId;
     next();
   } catch (error) {
     res.status(401).json({ error: "Unauthorized" });
