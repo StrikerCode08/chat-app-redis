@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
+import api from "../utils/api";
 
 interface Message {
   id: number;
@@ -23,16 +24,7 @@ const Chat: React.FC<ChatProps> = ({ ws }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const token = Cookies.get("token");
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/${chatId}/messages`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
+        const { data } = await api.get(`/api/${chatId}/messages`);
         setMessages(data);
       } catch (error) {
         console.error("Error fetching messages:", error);
