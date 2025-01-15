@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import api from "../utils/api";
 
 interface Chat {
   id: number;
@@ -27,16 +27,7 @@ const ChatsList: React.FC = () => {
 
   const fetchChats = async () => {
     try {
-      const token = Cookies.get("token");
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/user/chats`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = await response.json();
+      const { data } = await api.get("/api/user/chats");
       setChats(data);
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -46,23 +37,8 @@ const ChatsList: React.FC = () => {
   const createNewChat = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = Cookies.get("token");
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ username }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message);
-      }
-
-      const chat = await response.json();
-      setChats([...chats, chat]);
+      const { data } = await api.post("/api/", { username });
+      setChats([...chats, data]);
       setShowNewChatModal(false);
       setUsername("");
       setError("");

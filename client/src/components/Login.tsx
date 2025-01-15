@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+import api from "../utils/api";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -14,33 +14,7 @@ const Login: React.FC = () => {
     password: string
   ): Promise<boolean> => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/login`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-      if (!data.token) {
-        throw new Error("No token received");
-      }
-
-      Cookies.set("token", data.token, {
-        expires: 7,
-        secure: import.meta.env.VITE_NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        domain: window.location.hostname,
-      });
+      await api.post("/auth/login", { username, password });
       return true;
     } catch (error) {
       console.error("Login error:", error);
@@ -54,28 +28,13 @@ const Login: React.FC = () => {
 
     try {
       if (isRegistering) {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/auth/register`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password }),
-          }
-        );
-
-        if (!response.ok) {
-          const data = await response.json();
-          throw new Error(data.message || "Registration failed");
-        }
-
+        await api.post("/auth/register", { username, password });
         setIsRegistering(false);
       }
 
       const success = await handleLogin(username, password);
       if (success) {
-        navigate("/chats", { replace: true });
+        navigate("/chats");
       }
     } catch (err) {
       console.error(err);
